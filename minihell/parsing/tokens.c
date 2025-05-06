@@ -6,7 +6,7 @@
 /*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 18:13:37 by abenajib          #+#    #+#             */
-/*   Updated: 2025/04/23 21:03:21 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:54:00 by abenajib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,25 @@ t_token	*ft_newtok(t_token *token)
 		return (NULL);
 	new_token->type = token->type;
 	new_token->value = ft_strdup(token->value);
-	new_token->quote_type = token->quote_type;
 	new_token->next = NULL;
 	new_token->prev = NULL;
 	new_token->addSpace = token->addSpace;
+	new_token->variable = false;
+	return (new_token);
+}
+
+t_token	*ft_jointok(t_token *token, t_lexer **lexer)
+{
+	t_token	*new_token;
+	char	*value;
+
+	new_token = ft_get_next_token(*lexer);
+	if (!new_token)
+		return (NULL);
+	if (token->type != WORD)
+		new_token->type = token->type;
+	value = ft_strjoin(token->value, new_token->value);
+	new_token->value = value;
 	return (new_token);
 }
 
@@ -58,13 +73,20 @@ t_token	*ft_get_next_token(t_lexer *lexer)
 	if (lexer->pos >= lexer->len)
 		return (NULL);
 	current_char = lexer->input[lexer->pos];
-	if (current_char == '\'' || current_char == '"')
-	{
-		token = ft_handle_quotes(lexer, current_char);
-		return (token);
-	}
-	else if (ft_isspecial(current_char))
+	if (ft_isspecial(current_char))
 		return (ft_handle_operator(lexer));
 	else
-		return (ft_handle_word(lexer));
+	{
+		if (current_char == '\'' || current_char == '"')
+		{
+			token = ft_handle_quotes(lexer, current_char);
+			if (!token)
+				return (NULL);
+		}
+		else
+			token = ft_handle_word(lexer);
+		if (lexer->input[lexer->pos] != ' ' && lexer->input[lexer->pos] != '\0')
+			token = ft_jointok(token, &lexer);
+		return (token);
+	}
 }

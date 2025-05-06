@@ -1,8 +1,12 @@
 TARGET = minishell
 CC = clang
-# READLINE = $(shell brew --prefix readline)
 CFLAGS = -Wall -Wextra -Werror
-MINIFLAGS =  -lreadline
+MINIFLAGS = -lreadline
+
+# READLINE = $(shell brew --prefix readline)
+# CFLAGS = -Wall -Wextra -Werror -I$(READLINE)/include -fsanitize=address -g
+# MINIFLAGS =  -lreadline -L$(READLINE)/lib -g -Wl,-no_pie
+
 SRCS=	$(TARGET).c \
 	./parsing/cwd.c \
 	./parsing/env_init.c \
@@ -16,15 +20,21 @@ SRCS=	$(TARGET).c \
 	./parsing/parser.c \
 	./parsing/varexp.c \
 	./parsing/nodes.c \
+	./parsing/expanding_utils.c \
+	./parsing/heredoc_exp.c \
 	./parsing/redirection.c \
 	./exec/parsing_split.c \
 	./exec/utils.c \
 	./exec/run_cmd.c \
 	./exec/execution.c \
 	./exec/ft_error.c \
-	./exec/here_doc.c \
+	./exec/heredoc/here_doc.c \
+	./exec/heredoc/here_doc_utils.c \
 	./exec/gnl/gnl.c \
 	./exec/gnl/gnl_utils.c \
+	./exec/signals.c \
+	./exec/get_cmd_path.c \
+	./exec/ambiguous.c \
 	./builtins/builtin.c \
 	./builtins/cd.c \
 	./builtins/echo.c \
@@ -90,6 +100,7 @@ fclean: clean
 	@echo "$(RED)Cleaning $(NAME) and $(TARGET) ...$(DEF_COLOR)"
 	@$(RM) $(NAME) $(TARGET)
 	@make -C ./libft fclean
+	@rm -rf minishell.dSYM/
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 01:08:06 by yagame            #+#    #+#             */
-/*   Updated: 2025/04/27 21:35:10 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/04/29 14:46:45 by abenajib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,16 @@ char    *ft_join_arg(char **cmd, int i)
 	return (hold);
 }
 
-void ft_print_echo(char *tmp, int n_flag)
+void	ft_print_echo(char *tmp, int n_flag)
 {
 	if (!n_flag)
-	{
 		ft_putendl_fd(tmp, 1);
-		ft_putstr_fd("\n", 1);
-	}
 	else
-	   ft_putstr_fd(tmp, 1);
+		ft_putstr_fd(tmp, 1);
 }
 
 
-int    ft_echo(char **cmd, t_cmdarg *shell)
+int	ft_echo(char **cmd, t_cmdarg *shell)
 {
 	int i;
 	int n_flag;
@@ -81,5 +78,5 @@ int    ft_echo(char **cmd, t_cmdarg *shell)
 	tmp = ft_join_arg(cmd, i);
 	ft_print_echo(tmp, n_flag);
 	free(tmp);
-	return (1);
+	return (0);
 }

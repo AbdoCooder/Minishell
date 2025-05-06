@@ -6,7 +6,7 @@
 /*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 11:00:00 by abenajib          #+#    #+#             */
-/*   Updated: 2025/04/15 16:45:27 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:26:39 by abenajib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,17 @@ void	ft_free_token(t_token *token)
 
 void	ft_free_node(t_cmdarg *node)
 {
+	int	i;
+
+	i = 0;
 	if (node)
 	{
-		free(node->strags);
+		if (node->cmd)
+		{
+			while (i < node->cmdSize)
+				free(node->cmd[i++]);
+			free(node->cmd);
+		}
 		ft_free_redi_list(node->input);
 		ft_free_redi_list(node->output);
 		free(node);

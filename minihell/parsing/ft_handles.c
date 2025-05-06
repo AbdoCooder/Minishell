@@ -6,7 +6,7 @@
 /*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 18:13:37 by abenajib          #+#    #+#             */
-/*   Updated: 2025/04/23 21:03:21 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:34:10 by abenajib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,13 @@ t_token	*ft_handle_quotes(t_lexer *lexer, char quote_char)
 	int		start;
 	char	*content;
 	t_token	*token;
-	// t_token	*tmp_token;
 
 	lexer->pos++;
 	start = lexer->pos;
-	while (lexer->pos < lexer->len
-		&& lexer->input[lexer->pos] != quote_char)
+	while (lexer->pos < lexer->len && lexer->input[lexer->pos] != quote_char)
 		lexer->pos++;
 	if (lexer->pos >= lexer->len)
-		return (printf(RED"unexpected EOF while looking \
-for matching quote"RESET), NULL);
+		return (printf(UNCLOSED), NULL);
 	content = ft_substr(lexer->input, start, lexer->pos - start);
 	lexer->pos++;
 	token = (t_token *)malloc(sizeof(t_token));
@@ -43,18 +40,7 @@ for matching quote"RESET), NULL);
 		token->type = SINGLE_QUOTE;
 	else
 		token->type = DOUBLE_QUOTE;
-	// if(ft_isspace(lexer->input[lexer->pos]) || !isoperator(lexer->input[lexer->pos]))
-	// {
-	// 	tmp_token = ft_handle_word(lexer);
-	// 	token->value = ft_strjoin(content, tmp_token->value);
-	// 	token->type = WORD;
-	// 	token->quote_type = '\0';
-	// 	// free(content);
-	// }
-	// else
-	// 	tmp_token = NULL;
 	token->value = content;
-	token->quote_type = quote_char;
 	if (ft_isspace(lexer->input[lexer->pos]))
 		token->addSpace = true;
 	else
@@ -104,7 +90,6 @@ t_token	*ft_handle_operator(t_lexer *lexer)
 	if (!token->value)
 		return (free(token), NULL);
 	ft_set_token_type(token, op_len, op);
-	token->quote_type = '\0';
 	lexer->pos += op_len;
 	return (token);
 }
@@ -117,7 +102,8 @@ t_token	*ft_handle_word(t_lexer *lexer)
 
 	start = lexer->pos;
 	while (lexer->pos < lexer->len && !ft_isspace(lexer->input[lexer->pos])
-		&& !ft_isspecial(lexer->input[lexer->pos]) && lexer->input[lexer->pos] != '\''
+		&& !ft_isspecial(lexer->input[lexer->pos])
+		&& lexer->input[lexer->pos] != '\''
 		&& lexer->input[lexer->pos] != '"')
 		lexer->pos++;
 	value = ft_substr(lexer->input, start, lexer->pos - start);
@@ -126,7 +112,6 @@ t_token	*ft_handle_word(t_lexer *lexer)
 		return (NULL);
 	token->type = WORD;
 	token->value = value;
-	token->quote_type = '\0';
 	if (ft_isspace(lexer->input[lexer->pos]))
 		token->addSpace = true;
 	else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yagame <yagame@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 01:12:04 by yagame            #+#    #+#             */
-/*   Updated: 2025/04/27 21:35:06 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:58:41 by yagame           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ int    ft_cd(char **cmd, t_list **env)
 		path = ft_getenv("OLDPWD", *env);
 		if (path == NULL)
 			return (free_dp(cmd), write(2, "cd: OLDPWD not set\n", 19), 1);
+			
 	}
 	else
 	   path = cmd[1];
