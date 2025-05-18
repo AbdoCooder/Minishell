@@ -7,7 +7,7 @@ Minishell is a lightweight shell built in C, inspired by Bash. It supports comma
 ✅ Command execution using `execve()`  
 ✅ Built-in commands: `cd`, `echo`, `pwd`, `export`, `unset`, `env`, `exit`  
 ✅ Input/output redirections (`<`, `>`, `>>`, `<<`)  
-✅ Pipes (`|`) for command chaining  
+✅ Pipes (`|`) for command chaining     
 ✅ Environment variable expansion (`$VAR`, `$?`)  
 ✅ Signal handling (`Ctrl-C`, `Ctrl-D`, `Ctrl-\`)  
 
