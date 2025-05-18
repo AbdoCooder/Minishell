@@ -2,9 +2,9 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ 51-add-wildcards ]
+    branches: [ main ]
   pull_request:
-    branches: [ 51-add-wildcards ]
+    branches: [ main ]
 
 jobs:
   build-test-analyze:
