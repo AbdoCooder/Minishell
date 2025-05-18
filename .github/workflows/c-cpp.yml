@@ -1,0 +1,53 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ 51-add-wildcards ]
+  pull_request:
+    branches: [ 51-add-wildcards ]
+
+jobs:
+  build-test-analyze:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y ${{ matrix.compiler }} make cppcheck clang-format
+
+    - name: Set CC environment variable
+      run: echo "CC=${{ matrix.compiler }}" >> $GITHUB_ENV
+
+    - name: Build Minishell
+      run: make
+
+    - name: Run tests
+      run: |
+        if [ -f ./tests/run_tests.sh ]; then
+          chmod +x ./tests/run_tests.sh
+          ./tests/run_tests.sh
+        else
+          echo "No test script found. Skipping tests."
+        fi
+
+    - name: Static analysis (cppcheck)
+      run: cppcheck --enable=all --inconclusive --quiet --error-exitcode=1 .
+
+    - name: Format check (clang-format)
+      run: |
+        find . -regex '.*\.\(c\|h\)$' | xargs clang-format -style=file -output-replacements-xml | grep "<replacement " && exit 1 || echo "All files are properly formatted"
+
+    - name: Upload build artifacts
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: |
+          ./build/
+          ./tests/test-results.log
