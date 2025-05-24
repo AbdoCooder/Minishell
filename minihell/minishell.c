@@ -88,7 +88,7 @@ void	minishell(char *input, t_list **minienv)
 	if (input[0] == '\0')
 		return ;
 	add_history(input);
-	token_list = ft_strtok(input);
+	token_list = ft_strtok(input, *minienv);
 	// ft_print_tokenlist(token_list);
 	if (ft_check_syntax(token_list) == -1)
 		return (ft_free_tokenlist(token_list));

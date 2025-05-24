@@ -23,7 +23,7 @@ t_lexer	*ft_lexer_init(char *input)
 	return (lexer);
 }
 
-t_token	*ft_strtok(char *input)
+t_token	*ft_strtok(char *input, t_list *minienv)
 {
 	t_lexer	*lexer;
 	t_token	*token;

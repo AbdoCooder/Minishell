@@ -86,8 +86,6 @@ void	ft_child(t_cmdarg *current_cmd, t_list *env, int tmp_in, int *p_fd)
 		close(p_fd[1]);
 		close(p_fd[0]);
 	}
-	// fprintf(stderr,"%s\n", "hello");
-
 	handle_input(current_cmd->input);
 	handle_output(current_cmd->output);
 	ft_is_builtin(current_cmd, &env);
