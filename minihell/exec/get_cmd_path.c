@@ -3,29 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   get_cmd_path.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: otzarwal <otzarwal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 09:52:31 by yagame            #+#    #+#             */
-/*   Updated: 2025/05/05 02:10:53 by codespace        ###   ########.fr       */
+/*   Updated: 2025/05/18 01:48:00 by otzarwal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void 	ft_free_list(t_list **list)
+void	ft_free_list(t_list **list)
 {
+	t_list	*current;
+	t_list	*next;
+
 	if (!list || !*list)
 		return ;
-	if((*list)->key)
-		free((*list)->key);
-	if((*list)->value)
-		free((*list)->value);
-	free(*list);
+	current = *list;
+	while (current)
+	{
+		next = current->next;
+		if (current->key)
+			free(current->key);
+		if (current->value)
+			free(current->value);
+		free(current);
+		current = next;
+	}
+	*list = NULL;
 }
 
 char	*find_path(t_list *path)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	tmp = path;
 	while (tmp)
@@ -37,9 +47,9 @@ char	*find_path(t_list *path)
 	return (NULL);
 }
 
-void ft_get_path(char **full_path, char **path_cmd, char *p)
+void	ft_get_path(char **full_path, char **path_cmd, char *p)
 {
-	char *tmp;
+	char	*tmp;
 
 	tmp = NULL;
 	*full_path = NULL;
@@ -47,41 +57,62 @@ void ft_get_path(char **full_path, char **path_cmd, char *p)
 	{
 		*full_path = ft_strjoin(*path_cmd, "/");
 		if (!*full_path)
-			return;
-			
+			return ;
 		tmp = *full_path;
 		*full_path = ft_strjoin(*full_path, p);
-		free(tmp); // Always free the intermediate path
+		free(tmp);
 		tmp = NULL;
-		
-		if (!*full_path) // Check if allocation failed
-			return;
-			
+		if (!*full_path)
+			return ;
 		if (access(*full_path, X_OK) == 0)
-			return; // Executable found
-			
-		free(*full_path); // Free memory if command not found in this path
+			return ;
+		free(*full_path);
 		*full_path = NULL;
 		path_cmd++;
 	}
 }
 
-char *check_exec(char *p, t_list *env)
+char	*ft_join_with_path(char *p)
 {
-	char *full_path;
-	char *path;
-	char **path_cmd;
+	char	*path;
+	char	*tmp;
+
+	tmp = NULL;
+	path = getcwd(NULL, 0);
+	if (!path)
+		return (NULL);
+	tmp = ft_strjoin(path, "/");
+	if (!tmp)
+	{
+		free(path);
+		return (NULL);
+	}
+	free(path);
+	tmp = my_strjoin(tmp, p);
+	if (!tmp)
+		return (NULL);
+	if (access(tmp, X_OK) == 0)
+		return (tmp);
+	free(tmp);
+	return (NULL);
+}
+
+char	*check_exec(char *p, t_list *env)
+{
+	char	*full_path;
+	char	*path;
+	char	**path_cmd;
+	char	*dir_path;
 
 	if (!p)
 		return (NULL);
-	full_path = NULL;
-	if (*p == '/' || *p == '.')
-	{
-		if (access(p, X_OK) == 0)
-			return (ft_strdup(p));
-		else
-			return (NULL);
-	}
+	full_path = check_full_path(p);
+	if (full_path)
+		return (full_path);
+	dir_path = ft_join_with_path(p);
+	if (dir_path)
+		return (dir_path);
+	free(dir_path);
 	path = find_path(env);
 	if (!path)
 		return (NULL);
@@ -89,8 +120,8 @@ char *check_exec(char *p, t_list *env)
 	if (!path_cmd)
 		return (NULL);
 	ft_get_path(&full_path, path_cmd, p);
-	free_dp(path_cmd); // Free the split path array
+	free_dp(path_cmd);
 	if (!full_path)
-		return (NULL); // Ensure no memory is leaked if command is not found
+		return (NULL);
 	return (full_path);
 }

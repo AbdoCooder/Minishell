@@ -1,15 +1,17 @@
 TARGET = minishell
 CC = clang
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -Wunreachable-code
 MINIFLAGS = -lreadline
 
-# READLINE = $(shell brew --prefix readline)
-# CFLAGS = -Wall -Wextra -Werror -I$(READLINE)/include -fsanitize=address -g
-# MINIFLAGS =  -lreadline -L$(READLINE)/lib -g -Wl,-no_pie
+READLINE = $(shell brew --prefix readline)
+CFLAGS = -Wall -Wextra -Werror -I$(READLINE)/include
+MINIFLAGS =  -lreadline -L$(READLINE)/lib -g -Wl,-no_pie
 
 SRCS=	$(TARGET).c \
+	minishell_utils.c \
 	./parsing/cwd.c \
 	./parsing/env_init.c \
+	./parsing/env_parse.c \
 	./builtins/builtin.c \
 	./parsing/strtok.c \
 	./parsing/ft_handles.c \
@@ -26,6 +28,7 @@ SRCS=	$(TARGET).c \
 	./exec/parsing_split.c \
 	./exec/utils.c \
 	./exec/run_cmd.c \
+	./exec/run_cmd_utils.c \
 	./exec/execution.c \
 	./exec/ft_error.c \
 	./exec/heredoc/here_doc.c \
@@ -35,22 +38,28 @@ SRCS=	$(TARGET).c \
 	./exec/signals.c \
 	./exec/get_cmd_path.c \
 	./exec/ambiguous.c \
+	./exec/run_cmd_utils_2.c \
 	./builtins/builtin.c \
 	./builtins/cd.c \
 	./builtins/echo.c \
 	./builtins/env.c \
 	./builtins/exit.c \
 	./builtins/export.c \
+	./builtins/export_utils.c \
 	./builtins/pwd.c \
 	./builtins/unset.c \
 	./builtins/handle_builtin_redi.c \
+	./builtins/handle_builtin_redi_utils.c \
 	./builtins/utils.c \
+	./builtins/cd_utils.c \
+	./builtins/export_utils_2.c \
 
 RM = rm -rf
 NAME = $(TARGET).a
 OBJS = $(SRCS:.c=.o)
 HEADER = $(TARGET).h
 LIBFT = ./libft/libft.a
+GET_NEXT_LINE = ./exec/gnl/get_next_line.h
 
 DEF_COLOR = \033[0;39m
 GRAY = \033[0;90m
@@ -80,7 +89,7 @@ $(NAME): $(OBJS)
 	@echo "$(BLUE)Archiving the Library $(NAME) ...$(DEF_COLOR)"
 	@ar rcs $(NAME) $^
 
-%.o: %.c $(HEADER)
+%.o: %.c $(HEADER) $(GET_NEXT_LINE)
 	@echo "$(BLUE)Compiling $< ...$(DEF_COLOR)"
 	@${CC} ${CFLAGS} -c $< -o $@
 

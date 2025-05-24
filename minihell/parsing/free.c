@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yagame <yagame@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 11:00:00 by abenajib          #+#    #+#             */
-/*   Updated: 2025/05/04 19:26:39 by abenajib         ###   ########.fr       */
+/*   Updated: 2025/05/21 22:58:02 by yagame           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	ft_free_node(t_cmdarg *node)
 	{
 		if (node->cmd)
 		{
-			while (i < node->cmdSize)
+			while (i < node->cmdsize)
 				free(node->cmd[i++]);
 			free(node->cmd);
 		}

@@ -1,30 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memchr.c                                        :+:      :+:    :+:   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abenajib <abenajib@student.42.fr>          +#+  +:+       +#+        */
+/*   By: otzarwal <otzarwal@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 17:19:27 by abenajib          #+#    #+#             */
-/*   Updated: 2025/04/05 12:37:28 by abenajib         ###   ########.fr       */
+/*   Created: 2025/05/22 01:10:53 by otzarwal          #+#    #+#             */
+/*   Updated: 2025/05/22 01:12:03 by otzarwal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-void	*ft_memchr(const void *s, int c, size_t n)
+int	size_dp(char **c)
 {
-	unsigned char	*str;
-	size_t			i;
+	int	i;
 
-	str = (unsigned char *)s;
 	i = 0;
-	while (n > 0)
+	while (*c)
 	{
-		if (str[i] == (unsigned char)c)
-			return (str + i);
+		c++;
 		i++;
-		n--;
+	}
+	return (i);
+}
+
+t_list	*ft_find_node(t_list *env, char *key)
+{
+	t_list	*tmp;
+
+	tmp = env;
+	while (tmp)
+	{
+		if (ft_strcmp(tmp->key, key) == 0)
+			return (tmp);
+		tmp = tmp->next;
 	}
 	return (NULL);
 }
