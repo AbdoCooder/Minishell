@@ -1,0 +1,78 @@
+@startuml Minishell_Parsing_Flow_Simple
+
+!pragma linetype ortho
+
+skinparam backgroundColor White
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam package {
+    BackgroundColor LightYellow
+    BorderColor Orange
+    FontSize 14
+}
+
+skinparam component {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+}
+
+skinparam note {
+    BackgroundColor LemonChiffon
+    BorderColor Gray
+}
+
+title Minishell - Simplified Parsing Flow
+
+' --- Core Stages ---
+
+package "Input Stage" {
+    actor User
+    component [Input Reader] as InputReader
+    note left of InputReader : Captures raw command line string
+}
+
+package "Tokenization Stage" {
+    component [Lexical Analyzer (Lexer)] as Lexer
+    note right of Lexer
+        - Converts raw string to token stream.
+        - Handles quotes and special characters (|, <, >, etc.).
+        - Manages heredoc token identification.
+    end note
+}
+
+package "Syntactic Analysis Stage" {
+    component [Syntax Analyzer (Parser)] as Parser
+    note right of Parser
+        - Takes token stream.
+        - Validates command syntax.
+        - Performs variable expansion (using Env Data).
+        - Builds structured command representation (e.g., AST).
+    end note
+}
+
+package "Supporting Data" {
+    component [Environment Data] as EnvData
+    note bottom of EnvData: Provides variable values for expansion
+}
+
+package "Output of Parsing" {
+    component [Structured Commands] as StructuredCommands
+    note left of StructuredCommands : Ready for execution engine
+}
+
+' --- Simplified Flow ---
+
+User --> InputReader : "Enters command"
+InputReader --> Lexer : "Raw Command String"
+
+Lexer --> Parser : "Token Stream"
+
+Parser -> EnvData : "Requests Var Value (if $VAR found)"
+EnvData --> Parser : "Returns Var Value"
+
+Parser --> StructuredCommands : "Builds"
+
+StructuredCommands --> [Execution Engine] : "To Next Stage"
+
+@enduml
