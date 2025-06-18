@@ -1,0 +1,93 @@
+' Minishell - Simplified Execution Flow (UML Draft)
+
+' Input: Structured Commands (from parser)
+' Execution Manager:
+' Iterates through commands (pipeline support)
+' For each command:
+' [Pipe Setup] (if needed)
+' [Fork Child Process]
+' In child:
+' [Setup Signals]
+' [Setup Redirections]
+' [Handle Builtins] (if builtin, execute and exit)
+' [Resolve Command Path]
+' [Execute Command] (execve)
+' In parent:
+' [Manage Pipes]
+' [Wait for Children]
+' Output: Command results, exit status
+' Key Components for the UML:
+
+' Execution Manager (main loop, pipe/fork logic)
+' Child Process (signal, redirection, builtin/external execution)
+' Parent Process (pipe management, wait)
+' Command Path Resolver (PATH/env lookup)
+' Builtin Handler (run builtins)
+' Redirection Handler (input/output/append/heredoc)
+' Flow:
+' Structured Commands → Execution Manager → [Child/Parent split] → Command Execution/Wait → Output
+
+
+@startuml Minishell_Execution_Flow_Simple
+
+!pragma linetype ortho
+skinparam backgroundColor White
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+skinparam package {
+    BackgroundColor LightYellow
+    BorderColor Orange
+    FontSize 14
+}
+
+skinparam component {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+}
+
+skinparam note {
+    BackgroundColor LemonChiffon
+    BorderColor Gray
+}
+
+title Minishell - Simplified Execution Flow
+
+package "Execution Manager" {
+    component [Execution Loop] as ExecLoop
+    note right of ExecLoop
+        - Iterates through structured commands
+        - Sets up pipes for pipelines
+        - Forks child processes
+    end note
+}
+
+package "Child Process" {
+    component [Setup Signals] as ChildSignals
+    component [Setup Redirections] as Redirections
+    component [Builtin Handler] as Builtin
+    component [Command Path Resolver] as PathResolver
+    component [Execute Command] as ExecCmd
+    note right of ExecCmd
+        - Executes builtins or external commands
+        - Uses execve for external
+    end note
+}
+
+package "Parent Process" {
+    component [Pipe Management] as PipeMgmt
+    component [Wait for Children] as WaitChildren
+}
+
+[Structured Commands] --> ExecLoop
+ExecLoop --> PipeMgmt : Setup pipes
+ExecLoop --> ChildSignals : Fork child
+ChildSignals --> Redirections
+Redirections --> Builtin
+Builtin --> PathResolver : If not builtin
+PathResolver --> ExecCmd
+ExecCmd --> PipeMgmt : On exit
+PipeMgmt --> WaitChildren
+WaitChildren --> [Output: Exit Status]
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml Minishell_Command_LinkedList
+
+class t_cmdarg {
+    char **cmd
+    int cmdsize
+    int cmd_capacity
+    bool is_builtin
+    int origin_stdout
+    int origin_stdin
+    t_redi_list *redirections
+    t_redi_list *input
+    t_redi_list *output
+    t_cmdarg *next
+}
+
+class t_redi_list {
+    t_token_type type
+    char *file
+    char *content
+    bool is_last
+    int tmp_fd
+    bool is_ambiguous
+    bool expand
+    bool variable
+    int heredoc_fd
+    t_redi_list *next
+}
+
+t_cmdarg "1" o-- "0..*" t_redi_list : redirections
+
+' Linked list for pipeline
+ t_cmdarg "1" --> "0..1" t_cmdarg : next (pipeline)
+
+@enduml

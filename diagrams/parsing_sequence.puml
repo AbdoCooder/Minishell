@@ -1,0 +1,44 @@
+@startuml Minishell_Parsing_Sequence
+
+actor User
+participant "Minishell" as Shell
+participant "Lexer" as Lexer
+participant "Parser" as Parser
+participant "Variable Expander" as Expander
+participant "Command Node Builder" as NodeBuilder
+
+User -> Shell : Enter command line
+Shell -> Lexer : Tokenize input
+loop For each character/token
+    Lexer -> Lexer : Skip whitespace
+    alt Special character/operator
+        Lexer -> Lexer : Create operator token
+    else Quoted string
+        Lexer -> Lexer : Handle quotes, create token
+    else Word
+        Lexer -> Lexer : Create word token
+        loop Variable detected
+            Lexer -> Expander : Expand variable
+            Expander -> Lexer : Expanded value
+        end
+    end
+    alt Token joining needed
+        Lexer -> Lexer : Join tokens (handle $ and quotes)
+    end
+end
+Lexer -> Shell : Token list
+Shell -> Parser : Parse tokens
+Parser -> NodeBuilder : For each token
+alt Word
+    NodeBuilder -> Expander : Expand/split if needed
+    Expander -> NodeBuilder : Expanded value(s)
+    NodeBuilder -> NodeBuilder : Add to command args
+else Redirection
+    NodeBuilder -> NodeBuilder : Add to redirection list
+else Pipe/Separator
+    NodeBuilder -> NodeBuilder : Finalize current command node
+end
+Parser -> Shell : Structured command nodes (AST/linked list)
+Shell -> Shell : Ready for execution
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml Minishell_Lexer_Activity
+
+title Minishell - Lexical Analysis (Lexer) Activity Diagram
+
+start
+:Receive raw input string;
+:Initialize token list;
+while (Not end of input)
+    :Skip whitespace;
+    if (Current char is quote?) then (yes)
+        :Read until matching quote;
+        :Add quoted string as single token;
+    else (no)
+        if (Current char is operator | < > ?) then (yes)
+            :Add operator as token;
+        else (no)
+            :Read word until whitespace or operator;
+            :Add word as token;
+        endif
+    endif
+endwhile
+:Return list of tokens;
+stop
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml Minishell_Heredoc_Sequence
+
+actor User
+participant "Minishell" as Shell
+participant "Command Parser" as Parser
+participant "Heredoc Handler" as Heredoc
+participant "Child Process" as Child
+participant "Parent Process" as Parent
+participant "Environment" as Env
+
+User -> Shell : Enter command with heredoc (<< DELIM)
+Shell -> Parser : Parse command
+Parser -> Shell : Structured command (with heredoc info)
+Shell -> Heredoc : check_here_doc(shell, env)
+Heredoc -> Heredoc : For each heredoc redirection
+Heredoc -> Heredoc : Create pipe
+Heredoc -> Heredoc : Fork process
+alt Child Process
+    Heredoc -> Child : open_here_doc(heredoc, pipe, env)
+    Child -> Child : setup_heredoc_signals()
+    loop Until delimiter matched
+        Child -> User : Prompt for input (> )
+        User -> Child : Enter line
+        alt Expansion enabled
+            Child -> Env : Expand variables in line
+        end
+        Child -> Child : Accumulate content
+    end
+    Child -> Child : Write content to pipe
+    Child -> Child : Exit
+end
+alt Parent Process
+    Heredoc -> Parent : parent(pipe, child_pid, status, heredoc)
+    Parent -> Parent : Wait for child
+    Parent -> Parent : Store heredoc fd if last
+end
+Shell <- Heredoc : Heredoc fds ready
+Shell -> Shell : Continue execution with heredoc input
+
+@enduml

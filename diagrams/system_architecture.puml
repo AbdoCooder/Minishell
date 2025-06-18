@@ -1,165 +1,29 @@
 @startuml Minishell_System_Architecture
-!define RECTANGLE class
 
 skinparam backgroundColor White
-skinparam package {
-    BackgroundColor LightGray
-    BorderColor Black
-    FontSize 14
-    FontStyle bold
-}
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
 skinparam component {
     BackgroundColor LightBlue
     BorderColor DarkBlue
-    FontSize 11
-}
-skinparam interface {
-    BackgroundColor Orange
-    BorderColor DarkOrange
-    FontColor Black
+    FontSize 12
 }
 
-title Minishell System Architecture - Layered Design
+title Minishell - System Architecture (Modular Flow)
 
-' Top Layer - User Interface
-package "User Interface Layer" {
-    interface "Command Line Input" as CLI
-    interface "Standard I/O" as StdIO
-    interface "File System" as FileSystem
-}
+actor User
+component "REPL (Main Loop)" as REPL
+component "Lexical Analyzer (Lexer)" as Lexer
+component "Parser" as Parser
+component "Expansion Module" as Expander
+component "Execution Engine" as Executor
 
-' Layer 1 - Main Control
-package "Main Control Layer" {
-    component [Main Controller] as Main
-    component [Signal Handler] as Signal
-}
-
-' Layer 2 - Input Processing (Left to Right Flow)
-package "Input Processing Layer" {
-    component [Lexical Analyzer] as Lexer
-    component [Syntax Analyzer] as Parser
-    component [Variable Expander] as VarExp
-}
-
-' Layer 3 - Command Processing
-package "Command Processing Layer" {
-    component [Command Splitter] as CmdSplit
-    component [Redirection Handler] as Redirect
-    component [Heredoc Engine] as Heredoc
-}
-
-' Layer 4 - Execution Layer
-package "Execution Layer" {
-    component [Built-in Manager] as BuiltinMgr
-    component [Command Executor] as CmdExec
-    component [Process Manager] as ProcMgr
-    component [Pipeline Controller] as Pipeline
-}
-
-' Layer 5 - Built-in Commands
-package "Built-in Commands Layer" {
-    component [Shell Built-ins] as ShellBuiltins
-}
-
-' Side Services - Environment & Memory
-package "Support Services" {
-    component [Environment Handler] as EnvHandler
-    component [Working Directory] as WorkDir
-    component [Memory Allocator] as MemAlloc
-    component [Data Structures] as DataStruct
-    component [Error Handler] as ErrorHandle
-}
-
-' Bottom Layer - External Dependencies
-package "External Dependencies" {
-    component [Readline Library] as Readline
-    component [Standard C Library] as StdLib
-    component [POSIX System Calls] as POSIX
-}
-
-' Vertical Flow - Main Processing Pipeline
-CLI --> Main : "User Input"
-Main --> Lexer : "Raw Command"
-Lexer --> Parser : "Token Stream"
-Parser --> VarExp : "Parsed Commands"
-VarExp --> CmdSplit : "Expanded Commands"
-CmdSplit --> Redirect : "Split Commands"
-Redirect --> Heredoc : "Heredoc Processing"
-
-' Execution Branch
-Parser --> BuiltinMgr : "Command Classification"
-BuiltinMgr --> ShellBuiltins : "Built-in Commands"
-BuiltinMgr --> CmdExec : "External Commands"
-CmdExec --> ProcMgr : "Process Control"
-ProcMgr --> Pipeline : "Pipeline Management"
-
-' Side Connections - Support Services
-VarExp <---> EnvHandler : "Variable Lookup"
-ShellBuiltins <---> EnvHandler : "Env Modification"
-ShellBuiltins <---> WorkDir : "Directory Changes"
-DataStruct ---> MemAlloc : "Memory Requests"
-MemAlloc ---> ErrorHandle : "Error Reporting"
-
-' Signal Management
-Signal ---> ProcMgr : "Process Signals"
-Signal ---> Heredoc : "Interrupt Handling"
-Signal ---> Main : "Signal Coordination"
-
-' External Dependencies
-Main ---> Readline : "Input Reading"
-CmdExec ---> POSIX : "System Calls"
-MemAlloc ---> StdLib : "Memory Functions"
-Signal ---> POSIX : "Signal Handling"
-
-' Output Connections
-ShellBuiltins ---> StdIO : "Command Output"
-CmdExec ---> StdIO : "Process Output"
-ErrorHandle ---> StdIO : "Error Messages"
-Redirect ---> FileSystem : "File Operations"
-
-' Layout Positioning
-CLI -[hidden]-> Main
-Main -[hidden]-> Lexer
-Lexer -[hidden]-> Parser
-Parser -[hidden]-> VarExp
-VarExp -[hidden]-> CmdSplit
-CmdSplit -[hidden]-> Redirect
-Redirect -[hidden]-> Heredoc
-BuiltinMgr -[hidden]-> ShellBuiltins
-CmdExec -[hidden]-> ProcMgr
-ProcMgr -[hidden]-> Pipeline
-
-' Component Details
-note top of Main
-**Main Controller**
-• Global exit status management
-• Main execution loop
-• Input validation
-• Shell initialization
-end note
-
-note top of Signal
-**Signal Handler**
-• SIGINT/SIGQUIT handling
-• Child process signals
-• Heredoc interruption
-• Parent process coordination
-end note
-
-note bottom of Pipeline
-**Pipeline Controller**
-• Inter-process communication
-• File descriptor management
-• Command chaining
-• Process synchronization
-end note
-
-note bottom of EnvHandler
-**Environment Management**
-• Variable storage & lookup
-• Environment initialization
-• Variable expansion support
-• PATH resolution
-end note
+User --> REPL : Input command
+REPL --> Lexer : Raw input string
+Lexer --> Parser : Token stream
+Parser --> Expander : Command structure (AST/linked list)
+Expander --> Executor : Expanded command structure
+Executor --> REPL : Output/result
+REPL --> User : Print result
 
 @enduml
