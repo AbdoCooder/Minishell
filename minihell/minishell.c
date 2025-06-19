@@ -95,6 +95,21 @@ t_cmdarg	*ft_parser(t_token *token_list, t_list *minienv)
 	return (cmdarg_list);
 }
 
+/*
+ * Core minishell function that processes a command line input string.
+ * Performs the following steps:
+ * 1. Adds input to command history
+ * 2. Checks for unclosed quotes
+ * 3. Tokenizes the input (lexical analysis)
+ * 4. Validates syntax
+ * 5. Parses tokens into command structures
+ * 6. Processes heredocs
+ * 7. Handles builtin commands or executes external commands
+ *
+ * @param input: Command line string from user input
+ * @param minienv: Pointer to environment variables list
+ * Side effects: Modifies environment, creates processes, handles I/O
+ */
 void	minishell(char *input, t_list **minienv)
 {
 	t_token		*token_list;

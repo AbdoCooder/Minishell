@@ -16,8 +16,13 @@ bool	ft_redierrors(t_token *current)
 
 /*
  * Closes any open heredoc file descriptors in the redirection list.
+ * Iterates through the given redirection list and closes any active
+ * heredoc file descriptors, then marks them as closed by setting
+ * the descriptor to -1. This function prevents file descriptor leaks
+ * when redirections are no longer needed.
  *
- * @param redi: Head of the redirection list
+ * @param redi: Head of the redirection list to process
+ * Side effects: Closes file descriptors, modifies heredoc_fd fields
  */
 void	ft_close_pipe(t_redi_list *redi)
 {
@@ -73,6 +78,16 @@ void	ft_cleaner(t_token *token_list, t_cmdarg *cmdarg_list)
 	ft_free_cmdlist(cmdarg_list);
 }
 
+/*
+ * Checks for unsupported tokens in the input string.
+ * This function identifies characters that are not supported by the shell
+ * implementation, specifically parentheses, ampersands, and asterisks.
+ * These characters are reserved for features not implemented in this shell.
+ *
+ * @param input: Input string to check for invalid tokens
+ * @return: 1 if input contains only valid tokens, 0 if invalid tokens found
+ * Side effects: Prints error message, sets global exit status on invalid input
+ */
 int	ft_check_invalid_token(char *input)
 {
 	if (ft_strchr(input, '(') || ft_strchr(input, ')')

@@ -2,7 +2,7 @@
 
 /*
  * Creates a complete copy of an environment variable linked list.
- * Duplicates all nodes with their key-val pairs to create an independent cpy
+ * Duplicates all nodes with their key-val pairs to create an independent copy
  * that can be modified without affecting the original environment list.
  * Used primarily for sorting environment variables for display.
  *

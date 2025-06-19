@@ -111,6 +111,17 @@ char	**get_env(t_list *env)
 	return (envp);
 }
 
+/*
+ * Handles error when attempting to execute a directory.
+ * Frees allocated memory for command path and name, then outputs
+ * an appropriate "is a directory" error message with the correct exit status.
+ * Called specifically when directory execution is attempted.
+ *
+ * @param cmd_path: Pointer to allocated command path string to free
+ * @param cmd_name: Pointer to allocated command name string to free
+ * @param current_cmd: Command structure containing command information
+ * Side effects: Frees memory, prints error message, exits process with status 126
+ */
 void	ft_free_isdir(char **cmd_path, char **cmd_name, t_cmdarg *current_cmd)
 {
 	free(*cmd_path);

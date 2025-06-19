@@ -87,13 +87,19 @@ void	ft_wait_children(int *status, pid_t last_cmd_pid)
  * Executes a pipeline of commands with proper process management.
  * Main execution function that creates child processes for each command
  * in the pipeline, sets up pipes between them, and coordinates the
- * execution. Handles process creation, pipe management, and cleanup.
+ * execution. For each command in the pipeline:
+ * 1. Creates pipes for communication between commands
+ * 2. Forks a child process
+ * 3. Sets up input/output redirection in the child
+ * 4. Executes the command in the child process
+ * 5. Handles file descriptor management in the parent
+ * 6. Waits for all children to complete and collects exit status
  *
- * @param shell: Linked list of commands to execute in pipeline
- * @param env: Environment variables for command execution
- * @return: 1 on successful setup, 0 on failure
+ * @param current_cmd: Linked list of commands to execute in pipeline
+ * @param env: Environment variables list for command execution
+ * @return: 1 on successful execution setup, 0 on failure
  * Side effects: Creates child processes, sets up pipes,
- * modifies global exit status
+ * modifies global exit status, manages file descriptors
  */
 int	execution(t_cmdarg *current_cmd, t_list *env)
 {

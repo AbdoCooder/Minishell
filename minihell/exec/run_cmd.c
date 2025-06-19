@@ -99,6 +99,17 @@ void	ft_is_builtin(t_cmdarg *current_cmd, t_list **env)
  * executes command
  */
 
+/*
+ * Processes all redirection operations for a command.
+ * Iterates through the redirection list for a command and sets up
+ * all input and output redirections, handling both standard redirections
+ * and heredocs. For each redirection, it calls the appropriate handler
+ * based on the redirection type.
+ *
+ * @param current_cmd: Command structure containing redirections to process
+ * Side effects: Modifies standard input/output file descriptors,
+ * opens files, sets up heredocs
+ */
 void	handle_redirections(t_cmdarg *current_cmd)
 {
 	t_cmdarg	*tmp;
@@ -117,6 +128,22 @@ void	handle_redirections(t_cmdarg *current_cmd)
 	tmp = tmp->next;
 }
 
+/*
+ * Main function for child process execution in pipeline.
+ * Handles the complete setup and execution of a command in a child process:
+ * 1. Sets up appropriate signal handlers for the child process
+ * 2. Configures stdin/stdout for piping between commands
+ * 3. Closes unused file descriptors to prevent leaks
+ * 4. Processes any redirections associated with the command
+ * 5. Executes builtin commands or external commands as appropriate
+ *
+ * @param current_cmd: Command structure to execute
+ * @param env: Environment variables list
+ * @param tmp_in: Input file descriptor from previous command in pipeline
+ * @param p_fd: Pipe file descriptors for output to next command
+ * Side effects: Modifies file descriptors, executes command,
+ * may terminate process
+ */
 void	ft_child(t_cmdarg *current_cmd, t_list *env, int tmp_in, int *p_fd)
 {
 	setup_child_signals();
